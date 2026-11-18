@@ -17,7 +17,9 @@ AI root-cause analysis.
 ```bash
 pnpm install
 cp apps/web/.env.example apps/web/.env.local
-pnpm dev:web
+pnpm db:up     # local Postgres via docker compose (data in .data/); `pnpm db:down` stops it
+pnpm db:migrate
+pnpm dev:web   # http://localhost:3000
 pnpm dev:ext   # opens Chrome with the dev build (apps/extension/.output/chrome-mv3-dev)
 ```
 

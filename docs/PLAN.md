@@ -23,7 +23,10 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
     `wxt.config.ts` is typechecked via `tsconfig.node.json` (keeps Node globals out of extension code).
   - Pin a public `key` in the manifest for a stable extension ID; record the ID (ADR 12). Keep the `.pem` out of git.
   - `host_permissions`: the API origin only, from env per environment (ADR 12).
-- [ ] **P0-4** Scaffold Next.js app, Drizzle + Postgres (docker-compose for local DB), `.env.example`
+- [x] **P0-4** Scaffold Next.js app, Drizzle + Postgres (docker-compose for local DB), `.env.example`
+  - Note: Next 16, `postgres` (postgres.js) driver, Zod-validated env in `apps/web/lib/env.ts` (lazy, so builds
+    need no DB). Baseline security headers set; viewer CSP deferred to P3-7. Added `db:up`/`db:down` scripts and
+    the React Hooks + Next ESLint plugins. Schema is empty until P3-1.
 - [ ] **P0-5** `packages/shared`: message types, `ConsoleEntry`, `NetworkEntry`, `DeviceInfo`, Zod schemas
   - `src/config.ts` (recording limits) already exists; wire it into the package exports here.
 
