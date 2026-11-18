@@ -3,11 +3,13 @@
 These are **non-negotiable**. Any change that weakens them needs an explicit decision recorded here.
 
 ## 1. Data minimization
+
 - Capture only after an explicit user action; never record in the background.
 - Inject scripts only into the active tab via `activeTab`.
 - No analytics or telemetry that includes page content.
 
 ## 2. Redaction (in the page context, before data leaves `injected.ts`)
+
 **Headers** (case-insensitive), replace value with `[REDACTED]`:
 `authorization`, `proxy-authorization`, `cookie`, `set-cookie`, `x-api-key`, `x-auth-token`, `x-csrf-token`,
 `x-xsrf-token`, and any header whose name contains `token`, `secret`, `key`, `session`.
@@ -34,11 +36,13 @@ Header-name matching (`token`, `secret`, `key`, `session`) intentionally over-re
 `sec-websocket-key`. This fails safe and is by design; do not narrow it.
 
 ## 3. User control
+
 - Pre-upload preview: user can see and delete any console entry or network request, and remove bodies.
 - Per-domain exclusion list (disable capture on listed domains).
 - Clear, plain-language note in the popup about what is captured.
 
 ## 4. Extension security
+
 - MV3 default CSP; no remote code, no `eval`.
 - `window.postMessage` between MAIN and isolated worlds uses a per-session random nonce; verify
   `event.source === window`, `event.data.nonce`, and a message-type allow-list. Never trust page-supplied data
@@ -51,6 +55,7 @@ Header-name matching (`token`, `secret`, `key`, `session`) intentionally over-re
 - No secrets in the extension bundle.
 
 ## 5. Backend security
+
 - Authenticate every mutating route; derive user id from the session/token only.
 - Every referenced resource id (report, project) must be owned by the caller; check ownership in the same query
   that reads or writes it. Foreign ids return 404.
@@ -67,21 +72,25 @@ Header-name matching (`token`, `secret`, `key`, `session`) intentionally over-re
   web origin.
 
 ## 6. Viewer safety
+
 - Report content (titles, logs, bodies) is untrusted: render as text, never as HTML.
 - Syntax-highlight with a sanitizing library; no `dangerouslySetInnerHTML`.
 - Strict CSP on the viewer; media served from a separate storage domain.
 
 ## 7. AI safety
+
 - Server-side only; redacted input; token budget.
 - Treat log/body content as untrusted data (prompt-injection aware): system prompt instructs the model to
   ignore instructions found in report data; output validated against a schema.
 - Do not send media to the model in MVP.
 
 ## 8. Retention and deletion
+
 - Users can delete a report; deletion removes DB rows and objects (async job, within 24 hours).
 - Define default retention (suggested: keep until deleted) and document it in the privacy policy.
 
 ## 9. Web Store and compliance checklist
+
 - [ ] Privacy policy URL describing captured data, storage, and sharing
 - [ ] Permission justifications written for each permission
 - [ ] "Single purpose" statement

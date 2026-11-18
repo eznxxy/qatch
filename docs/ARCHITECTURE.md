@@ -1,6 +1,7 @@
 # Architecture
 
 ## 1. System overview
+
 ```
 ┌───────────────────────── Chrome (MV3 extension) ─────────────────────────┐
 │                                                                          │
@@ -23,16 +24,18 @@
 ```
 
 ## 2. Extension components
-| Component | World / context | Responsibility |
-|---|---|---|
-| `background.ts` | Service worker | Orchestrates capture sessions, `chrome.tabs`/`scripting`/`offscreen`, uploads, auth tokens. Stateless; persists to `chrome.storage.session`. |
-| `content.ts` | Isolated | Region-select overlay, capture UI chrome, relays data between page and worker. |
-| `injected.ts` | MAIN | Wraps `console.*`, `fetch`, `XMLHttpRequest`; listens for `error` and `unhandledrejection`; redacts, then `postMessage`s to content script. |
-| `offscreen/` | Offscreen doc | `MediaRecorder` for screen stream, canvas stitching/cropping, blob assembly. |
-| `popup/` | Extension page | Choose capture mode (visible, full, region, record), settings. |
-| `editor/` | Extension page (tab) | Annotation canvas (Fabric.js), report form, log preview/removal, upload progress. |
+
+| Component       | World / context      | Responsibility                                                                                                                               |
+| --------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `background.ts` | Service worker       | Orchestrates capture sessions, `chrome.tabs`/`scripting`/`offscreen`, uploads, auth tokens. Stateless; persists to `chrome.storage.session`. |
+| `content.ts`    | Isolated             | Region-select overlay, capture UI chrome, relays data between page and worker.                                                               |
+| `injected.ts`   | MAIN                 | Wraps `console.*`, `fetch`, `XMLHttpRequest`; listens for `error` and `unhandledrejection`; redacts, then `postMessage`s to content script.  |
+| `offscreen/`    | Offscreen doc        | `MediaRecorder` for screen stream, canvas stitching/cropping, blob assembly.                                                                 |
+| `popup/`        | Extension page       | Choose capture mode (visible, full, region, record), settings.                                                                               |
+| `editor/`       | Extension page (tab) | Annotation canvas (Fabric.js), report form, log preview/removal, upload progress.                                                            |
 
 ## 3. Capture session lifecycle
+
 1. User clicks the extension icon and chooses a mode (grants `activeTab`).
 2. Worker injects `injected.ts` (MAIN world) and `content.ts` via `chrome.scripting.executeScript`.
 3. Hooks start buffering console and network events with monotonic timestamps. Events are redacted at the source.
@@ -48,15 +51,17 @@ To capture the events that lead to a bug, the user clicks **Record Screen**, rep
 device info plus whatever console/network events occurred after injection.
 
 ## 4. Message contracts (in `packages/shared`)
+
 ```ts
 type Msg =
-  | { t: "capture/start"; mode: "visible" | "full" | "region" | "record" }
-  | { t: "capture/stop" }
-  | { t: "page/console"; entry: ConsoleEntry }
-  | { t: "page/network"; entry: NetworkEntry }
-  | { t: "region/selected"; rect: { x: number; y: number; w: number; h: number; dpr: number } }
-  | { t: "draft/ready"; draftId: string };
+  | { t: 'capture/start'; mode: 'visible' | 'full' | 'region' | 'record' }
+  | { t: 'capture/stop' }
+  | { t: 'page/console'; entry: ConsoleEntry }
+  | { t: 'page/network'; entry: NetworkEntry }
+  | { t: 'region/selected'; rect: { x: number; y: number; w: number; h: number; dpr: number } }
+  | { t: 'draft/ready'; draftId: string };
 ```
+
 All page-to-content messages carry a per-session `nonce`; receivers verify `event.source === window` and nonce.
 The nonce only filters out other frames and unrelated scripts. It is **not** a security boundary: `injected.ts`
 runs in the page's world, so the page can read the nonce and forge messages. The content script therefore
@@ -64,9 +69,11 @@ treats every `page/*` message as untrusted data: Zod-validate it, re-apply size 
 an action.
 
 ## 5. Capture techniques
+
 **Visible screenshot.** `chrome.tabs.captureVisibleTab({ format: "png" })`.
 
 **Full-page screenshot.** Two options; start with (A):
+
 - (A) Scroll-and-stitch: scroll by viewport height, `captureVisibleTab` each step (respect the ~2 calls/sec
   rate limit), temporarily set `position: fixed|sticky` elements to `position: static`/hidden after the first
   frame, stitch on an offscreen canvas, restore the page.
@@ -97,15 +104,16 @@ not capture document/asset loads or WebSocket frames. Acceptable for MVP.
 `navigator.connection`, `location.href`.
 
 ## 6. Permissions (justify any change)
-| Permission | Why |
-|---|---|
-| `activeTab` | Capture and inject only in the tab the user invoked |
-| `scripting` | Inject MAIN-world and content scripts on demand |
-| `storage` | Settings, session state |
-| `offscreen` | MediaRecorder and canvas work |
-| `tabCapture` | Tab recording |
-| `identity` or tab-based OAuth | Sign-in flow |
-| `debugger` | **Optional** (full-page option B), requested at runtime via `optional_permissions` |
+
+| Permission                          | Why                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `activeTab`                         | Capture and inject only in the tab the user invoked                                                                       |
+| `scripting`                         | Inject MAIN-world and content scripts on demand                                                                           |
+| `storage`                           | Settings, session state                                                                                                   |
+| `offscreen`                         | MediaRecorder and canvas work                                                                                             |
+| `tabCapture`                        | Tab recording                                                                                                             |
+| `identity` or tab-based OAuth       | Sign-in flow                                                                                                              |
+| `debugger`                          | **Optional** (full-page option B), requested at runtime via `optional_permissions`                                        |
 | `host_permissions`: API origin only | Call the Qatch backend from the extension without relying on CORS. Exactly one origin (per environment), never a wildcard |
 
 No `<all_urls>`, no `webRequest`.
@@ -116,6 +124,7 @@ backend CORS allow-list, the R2 bucket CORS rules (`chrome-extension://<id>`), a
 `.pem` is never committed.
 
 ## 7. Backend
+
 - Next.js App Router; route handlers for the REST API (see `API_AND_DATA.md`).
 - Postgres via Drizzle; migrations in `apps/web/db/migrations`.
 - Object storage: S3-compatible. The client uploads directly with presigned (multipart for video) URLs; the
@@ -126,22 +135,24 @@ backend CORS allow-list, the R2 bucket CORS rules (`chrome-extension://<id>`), a
   network data; result cached in `ai_analyses`.
 
 ## 8. Key decisions (ADR-lite)
-| # | Decision | Rationale | Alternatives |
-|---|---|---|---|
-| 1 | WXT + React | Good MV3 DX, HMR, typed entrypoints | CRXJS, plain Vite |
-| 2 | MAIN-world hooks injected on demand | Only way to see page `fetch`/console; avoids `<all_urls>` | `chrome.debugger` (banner), `webRequest` (no bodies) |
-| 3 | No rewind/session replay | Scope, privacy, complexity | rrweb ring buffer |
-| 4 | Offscreen doc for media | Service worker has no DOM | Recording in a visible tab |
-| 5 | Presigned direct uploads | Large videos, cheaper backend | Proxy uploads |
-| 6 | LLM only on backend | No secrets in extension, redaction control | Client-side calls |
-| 7 | Drafts in IndexedDB | Survive worker restarts and failed uploads | In-memory |
-| 8 | Better Auth for authentication | First-class bearer-token plugin for the extension plus cookie sessions for web; Drizzle adapter | Auth.js (cookie-centric; extension token flow would be hand-rolled) |
-| 9 | Hosted-only for MVP | Less surface to support; stack kept portable (S3-compatible, plain Postgres, env config) | Self-hostable from day one |
-| 10 | Repro context via "Record Screen", no pre-click buffer | Captures the events leading to the bug without `<all_urls>` or always-on hooks | Pre-click buffer via optional per-site host permissions |
-| 11 | Recording cap 30 min, configurable in `packages/shared/src/config.ts` | Long repros fit; size cap derived from duration so they never drift | Fixed 5 min cap |
-| 12 | Pinned manifest `key` + API-origin host permission | Stable ID for OAuth redirect and CORS; backend calls independent of CORS | Wildcard hosts; per-build IDs |
+
+| #   | Decision                                                              | Rationale                                                                                       | Alternatives                                                        |
+| --- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 1   | WXT + React                                                           | Good MV3 DX, HMR, typed entrypoints                                                             | CRXJS, plain Vite                                                   |
+| 2   | MAIN-world hooks injected on demand                                   | Only way to see page `fetch`/console; avoids `<all_urls>`                                       | `chrome.debugger` (banner), `webRequest` (no bodies)                |
+| 3   | No rewind/session replay                                              | Scope, privacy, complexity                                                                      | rrweb ring buffer                                                   |
+| 4   | Offscreen doc for media                                               | Service worker has no DOM                                                                       | Recording in a visible tab                                          |
+| 5   | Presigned direct uploads                                              | Large videos, cheaper backend                                                                   | Proxy uploads                                                       |
+| 6   | LLM only on backend                                                   | No secrets in extension, redaction control                                                      | Client-side calls                                                   |
+| 7   | Drafts in IndexedDB                                                   | Survive worker restarts and failed uploads                                                      | In-memory                                                           |
+| 8   | Better Auth for authentication                                        | First-class bearer-token plugin for the extension plus cookie sessions for web; Drizzle adapter | Auth.js (cookie-centric; extension token flow would be hand-rolled) |
+| 9   | Hosted-only for MVP                                                   | Less surface to support; stack kept portable (S3-compatible, plain Postgres, env config)        | Self-hostable from day one                                          |
+| 10  | Repro context via "Record Screen", no pre-click buffer                | Captures the events leading to the bug without `<all_urls>` or always-on hooks                  | Pre-click buffer via optional per-site host permissions             |
+| 11  | Recording cap 30 min, configurable in `packages/shared/src/config.ts` | Long repros fit; size cap derived from duration so they never drift                             | Fixed 5 min cap                                                     |
+| 12  | Pinned manifest `key` + API-origin host permission                    | Stable ID for OAuth redirect and CORS; backend calls independent of CORS                        | Wildcard hosts; per-build IDs                                       |
 
 ## 9. Testing strategy
+
 - Unit (Vitest): redaction, serialization, stitching math, DPR crop math, Zod schemas.
 - Integration: hook scripts against a fixture page (JSDOM/Playwright).
 - E2E (Playwright with the extension loaded): capture → edit → upload → open viewer.

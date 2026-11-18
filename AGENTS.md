@@ -5,6 +5,7 @@
 > as a link or send it to an issue tracker, with an optional AI-assisted root-cause analysis.
 
 ## Read first
+
 Before any non-trivial task, read the relevant doc in `docs/`:
 
 - `docs/PRD.md`: what we build and why, with requirement IDs (FR-xx)
@@ -14,11 +15,13 @@ Before any non-trivial task, read the relevant doc in `docs/`:
 - `docs/PLAN.md`: phased task list with checkboxes. **This is the source of truth for progress.**
 
 ## Out of scope (do NOT build)
+
 - Camera / webcam recording
 - "Rewind" / session replay / rrweb / always-on background recording
 - Firefox, Safari, Edge-specific work, mobile, desktop-app bugs
 
 ## Tech stack
+
 - Monorepo: pnpm workspaces, TypeScript (strict) everywhere
 - `apps/extension`: WXT (Vite) + React, Manifest V3, Fabric.js for annotation
 - `apps/web`: Next.js (App Router), Postgres via Drizzle ORM, S3-compatible storage (Cloudflare R2 / S3), Zod
@@ -26,6 +29,7 @@ Before any non-trivial task, read the relevant doc in `docs/`:
 - Tests: Vitest (unit), Playwright (e2e for web and extension)
 
 ## Commands
+
 ```bash
 pnpm install
 pnpm dev:ext        # run extension in dev (WXT), loads in Chrome
@@ -37,9 +41,11 @@ pnpm test           # vitest
 pnpm db:generate    # drizzle-kit generate
 pnpm db:migrate     # drizzle-kit migrate
 ```
+
 Run `pnpm typecheck && pnpm lint && pnpm test` before declaring any task done.
 
 ## Repo layout
+
 ```
 apps/
   extension/
@@ -61,6 +67,7 @@ docs/
 ```
 
 ## Conventions
+
 - TypeScript strict, no `any` (use `unknown` + Zod parsing at boundaries).
 - Validate every network boundary with Zod schemas from `packages/shared`.
 - Prefer small pure functions; keep Chrome API calls in `apps/extension/lib/*` wrappers so they can be mocked.
@@ -69,6 +76,7 @@ docs/
 - Commit style: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`).
 
 ## Chrome extension rules (MV3)
+
 - The service worker can be killed at any time. **Never keep required state only in memory**; persist to
   `chrome.storage.session` / IndexedDB.
 - The service worker has no DOM. Use the offscreen document for `MediaRecorder`, canvas and blob work.
@@ -81,6 +89,7 @@ docs/
 - Never call the LLM or hold third-party API secrets in the extension. Those live on the backend.
 
 ## Security rules (summary; see docs/SECURITY_PRIVACY.md)
+
 - Redact `Authorization`, `Cookie`, `Set-Cookie`, tokens and password-like fields **before** data leaves the
   page context.
 - Cap body sizes and log counts. Skip binary bodies.
@@ -88,6 +97,7 @@ docs/
 - Treat all report content as untrusted: sanitize when rendering in the viewer (no `dangerouslySetInnerHTML`).
 
 ## Workflow for agents
+
 1. Open `docs/PLAN.md`, pick the next unchecked task, and work on **one task at a time**.
 2. Re-read the linked FR-xx requirements before coding.
 3. Write or update tests alongside code.
@@ -96,6 +106,7 @@ docs/
    `docs/ARCHITECTURE.md` in the same change.
 
 ## Definition of done
+
 - Typecheck, lint and tests pass
 - Behavior matches the FR-xx requirement and acceptance criteria
 - No new permission or dependency without justification
