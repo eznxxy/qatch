@@ -36,6 +36,8 @@ the technical context captured automatically.
 - As a reporter, I get console logs, network requests and device info attached without extra effort.
 - As a reporter, I add a title and description and get a share link.
 - As a reporter, I send the report to Linear, Jira or GitHub as an issue.
+- As a reporter, I group my recordings and screenshots into projects (for example one per app or client) and
+  move them between projects later.
 - As a developer, I open a link and see media, logs, network calls and environment in one place.
 - As a developer, I click "Analyze" and get a likely root cause and suggested fixes.
 
@@ -67,6 +69,12 @@ Priority: **P0** = MVP, **P1** = shortly after, **P2** = later.
 | FR-16 | Dashboard listing the user's reports, search, delete | P1 |
 | FR-17 | Comments on a report | P2 |
 
+### Organization
+| ID | Requirement | Pri |
+|---|---|---|
+| FR-26 | Projects: the user can create, list, view, rename/edit (name, description, color) and delete their own projects. Deleting a project never deletes its reports; they move to "No project" | P1 |
+| FR-27 | Organize reports into projects: pick a project when submitting from the editor (defaults to the last used one), move one or many reports between projects from the dashboard, and filter the dashboard by project (including "No project") | P1 |
+
 ### Integrations and AI
 | ID | Requirement | Pri |
 |---|---|---|
@@ -93,6 +101,10 @@ Priority: **P0** = MVP, **P1** = shortly after, **P2** = later.
   is never present in the uploaded payload.
 - FR-12: Share link loads for an unauthenticated visitor when visibility is unlisted/public, and returns 404
   when private.
+- FR-26: Deleting a project with 5 reports leaves all 5 reports intact under "No project". Project names are
+  unique per user (case-insensitive).
+- FR-27: Moving 3 selected reports to project B updates all 3 in one action; a report can never be assigned to
+  a project owned by another user (the API returns 404).
 
 ## 9. Non-functional requirements
 - Performance: capture overhead on the host page is imperceptible; hooks add <2 ms per request.

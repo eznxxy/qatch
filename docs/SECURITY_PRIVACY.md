@@ -52,6 +52,8 @@ Header-name matching (`token`, `secret`, `key`, `session`) intentionally over-re
 
 ## 5. Backend security
 - Authenticate every mutating route; derive user id from the session/token only.
+- Every referenced resource id (report, project) must be owned by the caller; check ownership in the same query
+  that reads or writes it. Foreign ids return 404.
 - Zod-validate all inputs; enforce size/mime limits on presign.
 - `share_token`: ≥128 bits from a CSPRNG; constant-time comparison; rotate on demand.
 - Return 404 for unauthorized access to non-public reports.

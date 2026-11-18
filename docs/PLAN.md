@@ -73,8 +73,14 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
 - [ ] **P5-5** Console/network capture runs during recording and attaches on stop
 - [ ] **P5-6** **(manual)** Recording checklist: tab/window/screen, permission denied, stop from toolbar, 30-min cap
 
-## Phase 6: Dashboard and polish (FR-16, 25)
+## Phase 6: Dashboard and polish (FR-16, 25, 26, 27)
 - [ ] **P6-1** Dashboard: list, search, delete, visibility toggle
+- [ ] **P6-1a** `projects` table + `reports.project_id` migration; `/api/projects` CRUD and `POST /api/reports/move`
+  with ownership checks; tests for duplicate names, foreign ids (404), delete → reports become "No project" (FR-26)
+- [ ] **P6-1b** Dashboard projects: sidebar list with counts, create/rename/delete dialogs, filter by project and
+  "No project", move one or many reports (FR-26, FR-27)
+- [ ] **P6-1c** Editor project picker on submit (defaults to last used, "No project" allowed); `projectId` in
+  `POST /api/reports` (FR-27)
 - [ ] **P6-2** Per-domain capture exclusion list in extension settings (FR-25)
 - [ ] **P6-3** Error handling, empty states, loading/progress UI, keyboard accessibility
 - [ ] **P6-4** E2E suite: capture → editor → upload → viewer (Playwright with extension)
@@ -105,7 +111,7 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
 
 ## Backlog (not scheduled)
 - FR-17 comments; FR-22 AI chat follow-up
-- Workspaces/teams, SSO, usage limits
+- Workspaces/teams (shared projects), SSO, usage limits
 - WebSocket frame capture; document/asset request capture via `chrome.debugger`
 - Self-hosting guide
 
