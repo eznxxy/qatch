@@ -1,0 +1,11 @@
+# WXT build output and generated types
+.output/
+.wxt/
+stats.html
+
+# Packaged builds for the Web Store
+*.zip
+web-ext-artifacts/
+
+# Extension signing key (the public `key` in the manifest is fine; the private key is not)
+*.pem

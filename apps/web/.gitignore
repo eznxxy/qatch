@@ -1,0 +1,10 @@
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Deploy tooling
+.vercel/
+
+# Local env (only .env.example is committed)
+.env*.local

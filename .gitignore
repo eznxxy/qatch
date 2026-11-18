@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.output/
+.wxt/
+.next/
+out/
+*.tsbuildinfo
+
+# Environment (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# Keys and certificates (extension signing key, TLS, etc.)
+*.pem
+*.key
+*.crx
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test / tooling caches
+coverage/
+.vitest/
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+.eslintcache
+.turbo/
+
+# Local data (docker-compose volumes, local DB dumps)
+.data/
+*.sql.gz
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+
+# Local agent settings
+.claude/settings.local.json

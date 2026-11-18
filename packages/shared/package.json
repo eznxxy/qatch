@@ -1,0 +1,7 @@
+{
+  "name": "@qatch/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared types, Zod schemas and message contracts for Qatch"
+}

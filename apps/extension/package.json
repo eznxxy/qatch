@@ -1,0 +1,7 @@
+{
+  "name": "@qatch/extension",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Qatch Chrome extension (WXT + React, Manifest V3)"
+}

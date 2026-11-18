@@ -1,0 +1,7 @@
+{
+  "name": "@qatch/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Qatch web app and REST API (Next.js App Router)"
+}
