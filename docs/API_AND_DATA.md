@@ -170,6 +170,8 @@ cookie (web). Errors: `{ error: { code, message } }`.
 - Console ≤ 1,000 entries, network ≤ 500 entries, body ≤ 64 KB each (UTF-8 bytes), payload ≤ 5 MB
 - Per field: console message and stack ≤ 10,000 chars; URL ≤ 8,192 chars; ≤ 100 headers per request/response,
   name ≤ 256 and value ≤ 8,192 chars
+- Report details: title ≤ 200 chars (required, non-blank on submit), description ≤ 10,000 chars, ≤ 10 tags of
+  ≤ 32 chars each (lower-case, spaces become `-`); `reportDetailsSchema` in `packages/shared/src/report.ts`
 - Rate limits: reports 30/hour/user, analyze 20/hour/user
 - Projects: ≤ 200 per user; name 1–80 chars; description ≤ 500 chars
 

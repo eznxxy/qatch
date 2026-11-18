@@ -37,11 +37,37 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
 
 ## Phase 1: Local screenshot and annotation (FR-01, 03, 04, 09)
 
-- [ ] **P1-1** Popup with capture-mode buttons; worker handles `capture/start` (activeTab)
-- [ ] **P1-2** Visible-tab screenshot via `captureVisibleTab` → draft saved in IndexedDB → opens editor (FR-01)
-- [ ] **P1-3** Device info collector with unit tests (FR-09)
-- [ ] **P1-4** Region-select overlay in content script; DPR-correct crop on canvas (FR-03)
-- [ ] **P1-5** Editor page with Fabric.js: arrow, rectangle, freehand, text, blur, undo/redo; export PNG (FR-04)
+- [x] **P1-1** Popup with capture-mode buttons; worker handles `capture/start` (activeTab)
+  - Note: adds `activeTab` + `storage` only (`scripting` waits for the first injection). Worker accepts
+    messages only from extension pages, persists the capture session to `chrome.storage.session`, and
+    dispatches to per-mode handlers; modes without one reply `not-implemented`. Reply contract
+    `captureStartResultSchema` added to shared.
+- [x] **P1-2** Visible-tab screenshot via `captureVisibleTab` → draft saved in IndexedDB → opens editor (FR-01)
+  - Note: plain IndexedDB (`lib/draft-store.ts`, tested with `fake-indexeddb`); editor opens at
+    `editor.html?draft=<uuid>` next to the source tab and shows the image (annotation is P1-5). No new
+    permissions. Drafts are never cleaned up yet (P1-6).
+- [x] **P1-3** Device info collector with unit tests (FR-09)
+  - Note: adds `scripting`. A self-contained probe (`lib/device-env.ts`) runs in the tab's isolated world;
+    the worker normalizes it (`lib/device-info.ts`: `userAgentData` first, frozen UA string as fallback,
+    clamping) and stores it on the draft. Best effort: a failed probe never blocks the screenshot. Display is
+    the Device tab (P2-6).
+- Note (UI pass, not a plan task): popup and editor restyled to the Qatch UI design. Only implemented modes are
+  enabled (`lib/capture-modes.ts`; the others show "Soon"); "My reports" is left out until the dashboard
+  exists. The editor's Details form (title, description, severity, tags, visibility; `reportDetailsSchema` in
+  shared) auto-saves into the draft, Discard deletes it, and Download PNG saves the raw screenshot. The Device
+  tab already renders `draft.device` (part of P2-6). Console/Network tabs are empty until Phase 2;
+  "Create share link" stays disabled until P3-5; the annotation toolbar comes with P1-5.
+- [x] **P1-4** Region-select overlay in content script; DPR-correct crop on canvas (FR-03)
+  - Note: crop runs in the worker with `OffscreenCanvas` instead of the offscreen doc (no new permission;
+    ARCHITECTURE §2/§5 updated). `region/*` messages gained a `sessionId`, plus `region/start` and
+    `region/cancelled`. Enter captures the whole viewport as a keyboard alternative to dragging. No new
+    permissions.
+- [x] **P1-5** Editor page with Fabric.js: arrow, rectangle, freehand, text, blur, undo/redo; export PNG (FR-04)
+  - Note: annotations are an app-owned model (`lib/annotations.ts`, ADR 14) saved on the draft (`image` stays
+    the original capture); Fabric 7 renders and edits them. Blur = block-average pixelation, kept below other
+    marks. Undo/redo (100 steps, Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y), Delete removes the selection, Download PNG
+    exports at native resolution. Arrows, pen and text move but do not resize; nothing rotates. `canvas`
+    (fabric's optional Node dependency) has its build disabled in `pnpm-workspace.yaml`.
 - [ ] **P1-6** Draft persistence/recovery after service worker restart or tab close
 
 **Exit:** user can capture visible/region, annotate, and download the PNG locally.
@@ -50,6 +76,7 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
 
 - [ ] **P2-1** `redaction.ts` in `packages/shared` with exhaustive unit tests (headers, URLs, JSON/form bodies, console patterns) (FR-23)
   - Dependency-free (no Zod): it is bundled into `injected.ts` (SECURITY_PRIVACY §2).
+  - Also apply URL redaction to the draft's page URL (`draft.page.url`, stored unredacted since P1-2).
 - [ ] **P2-2** `injected.ts` (MAIN world): console hooks, `onerror`, `unhandledrejection`, safe serializer
 - [ ] **P2-3** `fetch` + XHR hooks: headers, bodies (text/JSON, capped), timing, errors; response cloning
 - [ ] **P2-4** Nonce-secured `postMessage` bridge to content script → worker → draft; sender validation

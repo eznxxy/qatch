@@ -20,8 +20,17 @@ cp apps/web/.env.example apps/web/.env.local
 pnpm db:up     # local Postgres via docker compose (data in .data/); `pnpm db:down` stops it
 pnpm db:migrate
 pnpm dev:web   # http://localhost:3000
-pnpm dev:ext   # opens Chrome with the dev build (apps/extension/.output/chrome-mv3-dev)
+pnpm dev:ext   # builds apps/extension/.output/chrome-mv3-dev and watches for changes
 ```
+
+Chrome no longer lets tools auto-load extensions, so load the dev build once by hand:
+
+1. Open `chrome://extensions` and turn on **Developer mode** (top right).
+2. Click **Load unpacked** and select `apps/extension/.output/chrome-mv3-dev`.
+3. The extension ID should be `pcnamdhfehfcfcjlpgahbgkmhedblele` (pinned key). Pin Qatch to the toolbar.
+
+Keep `pnpm dev:ext` running: it rebuilds on save and reloads the extension (the WXT dev server uses port 3100,
+so it does not clash with the web app on 3000).
 
 `pnpm build` needs `WXT_API_ORIGIN` for the extension (copy `apps/extension/.env.example` to
 `apps/extension/.env.production`); the unpacked build is in `apps/extension/.output/chrome-mv3`.

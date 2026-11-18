@@ -12,12 +12,17 @@ const EXTENSION_PUBLIC_KEY =
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
+  // Fixed port: WXT otherwise takes the first free port from 3000, which is the web app's port (and the
+  // extension's development API origin).
+  dev: { server: { port: 3100 } },
   manifest: {
     name: 'Qatch',
     description: 'Capture bugs with screenshots, recordings, console logs and network requests.',
     key: EXTENSION_PUBLIC_KEY,
-    // Permissions are added by the task that first needs them; each is justified in ARCHITECTURE §6.
-    permissions: [],
+    // Added by the task that first needs them; each is justified in ARCHITECTURE §6.
+    // activeTab: capture only the tab the user invoked. storage: capture session state (worker can die).
+    // scripting: inject on demand into that tab (device info now; content/MAIN-world scripts later).
+    permissions: ['activeTab', 'storage', 'scripting'],
   },
   hooks: {
     // Resolved here rather than in `manifest` so `wxt prepare` (typecheck/lint/postinstall) does not need
