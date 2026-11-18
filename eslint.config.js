@@ -1,5 +1,7 @@
 // @ts-check
 import js from '@eslint/js';
+import nextPlugin from '@next/eslint-plugin-next';
+import reactHooks from 'eslint-plugin-react-hooks';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -17,6 +19,8 @@ export default tseslint.config(
       '**/coverage/**',
       '**/playwright-report/**',
       '**/test-results/**',
+      '**/next-env.d.ts',
+      '**/db/migrations/**',
     ],
   },
   js.configs.recommended,
@@ -43,6 +47,26 @@ export default tseslint.config(
       'no-implied-eval': 'off',
       '@typescript-eslint/no-implied-eval': 'error',
       'no-new-func': 'error',
+    },
+  },
+  {
+    files: ['apps/**/*.{ts,tsx}'],
+    extends: [reactHooks.configs.flat.recommended],
+  },
+  {
+    files: ['apps/web/**/*.{ts,tsx}'],
+    extends: [nextPlugin.configs['core-web-vitals']],
+    settings: { next: { rootDir: 'apps/web/' } },
+  },
+  {
+    // Runs in Node at build time; typed against its own tsconfig (no Node globals in extension code).
+    files: ['apps/extension/wxt.config.ts'],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+        project: './apps/extension/tsconfig.node.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
   {

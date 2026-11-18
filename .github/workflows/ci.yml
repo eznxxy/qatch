@@ -31,5 +31,10 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
 
+      - run: pnpm build
+        env:
+          # Placeholder origin (reserved .invalid TLD): production builds require one.
+          WXT_API_ORIGIN: https://api.qatch.invalid
+
       # SECURITY_PRIVACY.md §5: dependency audit in CI.
       - run: pnpm audit --audit-level high

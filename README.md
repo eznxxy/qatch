@@ -17,9 +17,14 @@ AI root-cause analysis.
 ```bash
 pnpm install
 cp apps/web/.env.example apps/web/.env.local
-pnpm dev:web
-pnpm dev:ext   # then load the built extension from chrome://extensions (Developer mode)
+pnpm db:up     # local Postgres via docker compose (data in .data/); `pnpm db:down` stops it
+pnpm db:migrate
+pnpm dev:web   # http://localhost:3000
+pnpm dev:ext   # opens Chrome with the dev build (apps/extension/.output/chrome-mv3-dev)
 ```
+
+`pnpm build` needs `WXT_API_ORIGIN` for the extension (copy `apps/extension/.env.example` to
+`apps/extension/.env.production`); the unpacked build is in `apps/extension/.output/chrome-mv3`.
 
 ## Using with OpenCode
 

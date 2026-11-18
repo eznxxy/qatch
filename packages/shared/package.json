@@ -4,6 +4,12 @@
   "private": true,
   "type": "module",
   "description": "Shared types, Zod schemas and message contracts for Qatch",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts",
+    "./utf8": "./src/utf8.ts"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
@@ -11,5 +17,8 @@
   "devDependencies": {
     "typescript": "~6.0.3",
     "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
   }
 }

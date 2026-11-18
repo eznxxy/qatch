@@ -17,11 +17,20 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
     (`eslint . && prettier --check .`); Prettier reformatted the docs (whitespace/tables only). CI also runs
     `pnpm audit`; GHSA-fc5q-39xc-vjpf (dev-only picomatch, no fix published) is ignored in
     `pnpm-workspace.yaml` until a patch ships. `.gitattributes` forces LF.
-- [ ] **P0-3** Scaffold WXT extension (React, MV3) with empty background, content, popup, editor, offscreen entrypoints
+- [x] **P0-3** Scaffold WXT extension (React, MV3) with empty background, content, popup, editor, offscreen entrypoints
+  - Note: ID `pcnamdhfehfcfcjlpgahbgkmhedblele` (ARCHITECTURE §6). `permissions` left empty: each task adds the
+    ones it first uses. Host permission set in a `build:manifestGenerated` hook so `wxt prepare` needs no env.
+    `wxt.config.ts` is typechecked via `tsconfig.node.json` (keeps Node globals out of extension code).
   - Pin a public `key` in the manifest for a stable extension ID; record the ID (ADR 12). Keep the `.pem` out of git.
   - `host_permissions`: the API origin only, from env per environment (ADR 12).
-- [ ] **P0-4** Scaffold Next.js app, Drizzle + Postgres (docker-compose for local DB), `.env.example`
-- [ ] **P0-5** `packages/shared`: message types, `ConsoleEntry`, `NetworkEntry`, `DeviceInfo`, Zod schemas
+- [x] **P0-4** Scaffold Next.js app, Drizzle + Postgres (docker-compose for local DB), `.env.example`
+  - Note: Next 16, `postgres` (postgres.js) driver, Zod-validated env in `apps/web/lib/env.ts` (lazy, so builds
+    need no DB). Baseline security headers set; viewer CSP deferred to P3-7. Added `db:up`/`db:down` scripts and
+    the React Hooks + Next ESLint plugins. Schema is empty until P3-1.
+- [x] **P0-5** `packages/shared`: message types, `ConsoleEntry`, `NetworkEntry`, `DeviceInfo`, Zod schemas
+  - Note: schemas are the source of truth (types inferred). Added per-field caps not in the docs (message/stack
+    10k chars, URL 8k, 100 headers); recorded in API_AND_DATA §3. `draftId` is a UUID. Nonce envelope left
+    to P2-4. Zod-free subpaths `@qatch/shared/config` and `/utf8` for `injected.ts`.
   - `src/config.ts` (recording limits) already exists; wire it into the package exports here.
 
 **Exit:** `pnpm build` and `pnpm dev:ext` load an empty extension; `pnpm dev:web` serves a page.

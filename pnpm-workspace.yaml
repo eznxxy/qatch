@@ -2,6 +2,10 @@ packages:
   - apps/*
   - packages/*
 
+allowBuilds:
+  # Postinstall only verifies/installs esbuild's native binary (used by Vite, WXT and drizzle-kit).
+  esbuild: true
+
 auditConfig:
   ignoreGhsas:
     # picomatch ReDoS (<=4.0.7). Dev-only (typescript-eslint/vitest globbing our own patterns), and no patched
