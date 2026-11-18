@@ -27,7 +27,10 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
   - Note: Next 16, `postgres` (postgres.js) driver, Zod-validated env in `apps/web/lib/env.ts` (lazy, so builds
     need no DB). Baseline security headers set; viewer CSP deferred to P3-7. Added `db:up`/`db:down` scripts and
     the React Hooks + Next ESLint plugins. Schema is empty until P3-1.
-- [ ] **P0-5** `packages/shared`: message types, `ConsoleEntry`, `NetworkEntry`, `DeviceInfo`, Zod schemas
+- [x] **P0-5** `packages/shared`: message types, `ConsoleEntry`, `NetworkEntry`, `DeviceInfo`, Zod schemas
+  - Note: schemas are the source of truth (types inferred). Added per-field caps not in the docs (message/stack
+    10k chars, URL 8k, 100 headers); recorded in API_AND_DATA §3. `draftId` is a UUID. Nonce envelope left
+    to P2-4. Zod-free subpaths `@qatch/shared/config` and `/utf8` for `injected.ts`.
   - `src/config.ts` (recording limits) already exists; wire it into the package exports here.
 
 **Exit:** `pnpm build` and `pnpm dev:ext` load an empty extension; `pnpm dev:web` serves a page.

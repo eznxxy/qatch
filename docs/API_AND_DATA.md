@@ -82,6 +82,10 @@ Indexes: `reports(owner_id, created_at desc)`, `reports(share_token)`, `report_a
 
 ## 2. Payload types (in `packages/shared`)
 
+The Zod schemas in `packages/shared/src/capture.ts` and `messages.ts` are the source of truth; the types below
+are inferred from them. Schemas bound every string and collection (limits in `src/config.ts`) and strip
+unknown keys. `@qatch/shared/config` and `@qatch/shared/utf8` are Zod-free entry points for `injected.ts`.
+
 ```ts
 export type ConsoleEntry = {
   ts: number; // ms since capture start
@@ -163,7 +167,9 @@ cookie (web). Errors: `{ error: { code, message } }`.
 
 - Screenshot ≤ 20 MB; video ≤ 30 min and ≤ `RECORDING_MAX_BYTES` (about 675 MB), both from
   `packages/shared/src/config.ts` and enforced again by `/api/uploads/presign`
-- Console ≤ 1,000 entries, network ≤ 500 entries, body ≤ 64 KB each, payload ≤ 5 MB
+- Console ≤ 1,000 entries, network ≤ 500 entries, body ≤ 64 KB each (UTF-8 bytes), payload ≤ 5 MB
+- Per field: console message and stack ≤ 10,000 chars; URL ≤ 8,192 chars; ≤ 100 headers per request/response,
+  name ≤ 256 and value ≤ 8,192 chars
 - Rate limits: reports 30/hour/user, analyze 20/hour/user
 - Projects: ≤ 200 per user; name 1–80 chars; description ≤ 500 chars
 
