@@ -1,3 +1,9 @@
 packages:
   - apps/*
   - packages/*
+
+auditConfig:
+  ignoreGhsas:
+    # picomatch ReDoS (<=4.0.7). Dev-only (typescript-eslint/vitest globbing our own patterns), and no patched
+    # version is published yet (latest is 4.0.7). Remove once picomatch >=4.0.8 is released and installed.
+    - GHSA-fc5q-39xc-vjpf
