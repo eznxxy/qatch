@@ -1,0 +1,15 @@
+{
+  // WXT's generated config (paths, auto-import types, DOM libs) is applied last, so the repo's strict flags
+  // that it does not set are repeated here.
+  "extends": ["../../tsconfig.base.json", "./.wxt/tsconfig.json"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  // wxt.config.ts runs in Node: see tsconfig.node.json.
+  "exclude": ["node_modules", ".output", "wxt.config.ts"]
+}

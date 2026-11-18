@@ -123,6 +123,13 @@ and store builds. The ID is used by the `launchWebAuthFlow` redirect (`https://<
 backend CORS allow-list, the R2 bucket CORS rules (`chrome-extension://<id>`), and sender checks. The private
 `.pem` is never committed.
 
+- Extension ID: **`pcnamdhfehfcfcjlpgahbgkmhedblele`** (public key in `apps/extension/wxt.config.ts`).
+- Private key: `apps/extension/qatch-extension.pem` (gitignored). Keep a backup outside the repo; it is needed
+  to keep this ID on the first Chrome Web Store upload.
+- API origin: `WXT_API_ORIGIN` (see `apps/extension/.env.example`), validated at build time and written as the
+  only `host_permissions` entry. Development defaults to `http://localhost:3000`; other modes must set it.
+- Content scripts are registered at runtime (no `content_scripts` in the manifest) and injected on demand.
+
 ## 7. Backend
 
 - Next.js App Router; route handlers for the REST API (see `API_AND_DATA.md`).

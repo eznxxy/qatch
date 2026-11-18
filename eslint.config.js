@@ -46,6 +46,17 @@ export default tseslint.config(
     },
   },
   {
+    // Runs in Node at build time; typed against its own tsconfig (no Node globals in extension code).
+    files: ['apps/extension/wxt.config.ts'],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+        project: './apps/extension/tsconfig.node.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+  {
     files: ['**/*.{js,mjs,cjs}'],
     languageOptions: { globals: globals.node },
   },

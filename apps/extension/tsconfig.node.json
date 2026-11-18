@@ -1,0 +1,11 @@
+{
+  // Build-time code that runs in Node (WXT config). Kept separate so Node globals such as `process` are not
+  // visible to extension code, which runs in the browser.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    // WXT's `Browser` manifest types reference DOM types (e.g. ImageData); without DOM they degrade to `any`.
+    "lib": ["ES2023", "DOM"]
+  },
+  "include": ["wxt.config.ts", "lib/api-origin.ts"]
+}
