@@ -70,7 +70,8 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
     (fabric's optional Node dependency) has its build disabled in `pnpm-workspace.yaml`.
   - Follow-up polish: text annotations are drawn in the chosen colour with no label background (`textColorOn`
     removed); the segmented control styles moved to `assets/theme.css` and are shared by the popup and editor.
-    Open question: amber text may be hard to read on light screenshots. Check it by hand.
+    Resolved: amber text (~2:1 on white) was hard to read, so text now has a contrasting halo (`textHaloFor`:
+    dark for amber, white for red/blue, stroke painted under the fill), readable on light and dark pages.
 - [ ] **P1-6** Draft persistence/recovery after service worker restart or tab close
 
 **Exit:** user can capture visible/region, annotate, and download the PNG locally.

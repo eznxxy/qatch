@@ -90,6 +90,21 @@ export function fontSizeFor(imageWidth: number): number {
 }
 
 /**
+ * Outline painted behind text annotations so they stay readable on any screenshot. Each colour gets the
+ * halo it contrasts with: light amber (about 2:1 on white) a dark one, red and blue a white one. `width` is
+ * the full stroke; with the stroke painted under the fill, about half of it shows around each glyph.
+ */
+export function textHaloFor(
+  color: AnnotationColor,
+  fontSize: number,
+): { color: string; width: number } {
+  return {
+    color: color === '#F5A524' ? '#17181C' : '#FFFFFF',
+    width: Math.max(2, Math.round(fontSize / 5)),
+  };
+}
+
+/**
  * Pixelation block size. Large on purpose: small blocks over text can be partly reversed, so a block is
  * at least as tall as a line of body text.
  */

@@ -14,6 +14,7 @@ import {
   pixelateData,
   redoHistory,
   strokeWidthFor,
+  textHaloFor,
   translateAnnotation,
   undoHistory,
 } from './annotations';
@@ -103,6 +104,20 @@ describe('sizing', () => {
     expect(fontSizeFor(2560)).toBe(40);
     expect(blurBlockFor(1280)).toBe(16);
     expect(blurBlockFor(400)).toBe(12);
+  });
+});
+
+describe('textHaloFor', () => {
+  it('gives light amber a dark halo and red/blue a white one', () => {
+    expect(textHaloFor('#F5A524', 20).color).toBe('#17181C');
+    expect(textHaloFor('#E5484D', 20).color).toBe('#FFFFFF');
+    expect(textHaloFor('#2B59C3', 20).color).toBe('#FFFFFF');
+  });
+
+  it('scales the outline with the font size, never thinner than 2', () => {
+    expect(textHaloFor('#E5484D', 20).width).toBe(4);
+    expect(textHaloFor('#E5484D', 72).width).toBe(14);
+    expect(textHaloFor('#E5484D', 6).width).toBe(2);
   });
 });
 

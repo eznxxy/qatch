@@ -10,6 +10,7 @@ import {
   type PathCommand,
   pixelateData,
   TEXT_MAX_CHARS,
+  textHaloFor,
   translateAnnotation,
 } from '@/lib/annotations';
 
@@ -122,6 +123,7 @@ export function createObject(a: Annotation, source: CanvasImageSource): FabricOb
 }
 
 export function createText(a: Extract<Annotation, { type: 'text' }>): IText {
+  const halo = textHaloFor(a.color, a.size);
   return new IText(a.text, {
     ...INTERACTION,
     ...MOVE_ONLY,
@@ -130,8 +132,13 @@ export function createText(a: Extract<Annotation, { type: 'text' }>): IText {
     fontFamily: TEXT_FONT,
     fontSize: a.size,
     fontWeight: 600,
-    // The chosen colour is the text colour; no label background.
+    // The chosen colour is the text colour; no label background. A contrasting halo (stroke painted under
+    // the fill) keeps it readable on light and dark screenshots.
     fill: a.color,
+    stroke: halo.color,
+    strokeWidth: halo.width,
+    strokeLineJoin: 'round',
+    paintFirst: 'stroke',
     cursorColor: a.color,
     editingBorderColor: ACCENT,
   });
