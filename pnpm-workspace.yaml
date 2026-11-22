@@ -3,6 +3,9 @@ packages:
   - packages/*
 
 allowBuilds:
+  # Optional dependency of fabric, used only for server-side (Node) rendering. The editor runs in the
+  # browser, so its native build (node-gyp/prebuilt binaries) is never needed.
+  canvas: false
   # Postinstall only verifies/installs esbuild's native binary (used by Vite, WXT and drizzle-kit).
   esbuild: true
 

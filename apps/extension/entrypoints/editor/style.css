@@ -1,0 +1,577 @@
+/* Editor layout from the "Editor" artboard: top bar, screenshot workspace, report panel. */
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--page);
+}
+
+.notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100%;
+  padding: 24px;
+  color: var(--fg-2);
+  text-align: center;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* --- Top bar --- */
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.topbar__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.topbar__title h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--subtle);
+  color: var(--fg-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.save--saved svg {
+  color: var(--success);
+}
+
+.save--error {
+  color: var(--danger);
+}
+
+.topbar__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn--compact {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+/* --- Workspace --- */
+
+.workspace {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  min-height: 0;
+}
+
+.workspace__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.workspace__main {
+  gap: 12px;
+  padding: 16px 20px;
+  overflow: auto;
+}
+
+/* --- Annotation toolbar --- */
+
+.annot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.annot__group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.annot__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--fg-2);
+  cursor: pointer;
+}
+
+.annot__btn:hover:not(:disabled, [aria-pressed='true']) {
+  background: var(--subtle);
+}
+
+.annot__btn[aria-pressed='true'] {
+  background: var(--fg);
+  color: #ffffff;
+}
+
+.annot__btn:disabled {
+  color: var(--switch-off);
+  cursor: not-allowed;
+}
+
+.annot__sep {
+  width: 1px;
+  height: 28px;
+  margin: 0 6px;
+  background: var(--border);
+}
+
+/* Two-option segmented control, sized to its labels (options keep the shared 44 px target). */
+.annot__view {
+  grid-template-columns: repeat(2, auto);
+}
+
+.annot__view .segmented__option {
+  padding: 0 12px;
+}
+
+.annot__colors {
+  gap: 2px;
+}
+
+/* 44 px target around a 28 px swatch. */
+.annot__swatch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.annot__swatch-dot {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--border-strong);
+}
+
+.annot__swatch[aria-pressed='true'] .annot__swatch-dot {
+  border-color: var(--fg);
+  box-shadow: none;
+}
+
+.annot__swatch-dot[data-color='#E5484D'] {
+  background: #e5484d;
+}
+
+.annot__swatch-dot[data-color='#F5A524'] {
+  background: #f5a524;
+}
+
+.annot__swatch-dot[data-color='#2B59C3'] {
+  background: #2b59c3;
+}
+
+.annot__download {
+  min-height: 44px;
+  margin-left: auto;
+}
+
+/* --- Stage --- */
+
+.stage {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+}
+
+.stage__canvas {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Actual size: the screenshot can be wider than the stage, so scroll it there (not the whole page). */
+.stage__canvas--actual {
+  overflow-x: auto;
+}
+
+/*
+ * Contain (fit, not full page): the stage takes the height left in the column and the canvas is taken out
+ * of flow, so the host's size comes from the layout alone and the script fits the canvas inside it.
+ */
+.stage:has(> .stage__canvas--contain) {
+  flex: 1 1 0;
+  min-height: 240px;
+}
+
+.stage__canvas--contain {
+  position: relative;
+}
+
+.stage__canvas--contain .stage__mount {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fabric's wrapper: centre the scaled canvas and give it the screenshot card look. */
+.stage__canvas .canvas-container {
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: 0 2px 10px rgb(23 24 28 / 15%);
+}
+
+.stage__error {
+  margin: 0;
+  color: var(--danger);
+}
+
+.stage__note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stage__note[role='alert'] {
+  color: var(--danger);
+}
+
+/* --- Report panel --- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabs__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tabs__tab[aria-selected='true'] {
+  border-bottom-color: var(--accent);
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.tabs__count {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--subtle);
+  color: var(--fg-3);
+  font-size: 11px;
+}
+
+[role='tabpanel'] {
+  flex: 1;
+  overflow: auto;
+}
+
+.empty {
+  margin: 0;
+  padding: 24px 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* --- Details form --- */
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.field__label {
+  padding: 0;
+  color: var(--fg-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.field__required {
+  color: var(--danger);
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 14px;
+}
+
+.input--multiline {
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.input::placeholder,
+.tags__input::placeholder {
+  color: var(--disabled-fg);
+}
+
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot--low {
+  background: #8a8f98;
+}
+
+.dot--medium {
+  background: #f5a524;
+}
+
+.dot--high {
+  background: #e5484d;
+}
+
+.dot--critical {
+  background: #9f1239;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+
+.tags:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.tags__list {
+  display: contents;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 2px 2px 10px;
+  border-radius: 999px;
+  background: var(--subtle);
+  color: var(--fg-2);
+  font-size: 12px;
+}
+
+.tag__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.tag__remove:hover {
+  background: var(--track);
+  color: var(--fg);
+}
+
+.tags__input {
+  flex: 1;
+  min-width: 80px;
+  min-height: 30px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.choice:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.choice__input {
+  margin: 2px 0 0;
+  accent-color: var(--accent);
+}
+
+.choice__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.choice__label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.choice__hint {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* --- Device --- */
+
+.device {
+  margin: 0;
+  padding: 8px 16px 16px;
+}
+
+.device__row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--row-divider);
+}
+
+.device__row dt {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.device__row dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+/* --- Narrow windows: stack the panel under the screenshot --- */
+
+@media (width <= 900px) {
+  .editor {
+    height: auto;
+  }
+
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .panel {
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
+
+  /* The page scrolls here, so there is no leftover height to fill: give the contained stage its own. */
+  .stage:has(> .stage__canvas--contain) {
+    flex: none;
+    height: 70vh;
+  }
+}

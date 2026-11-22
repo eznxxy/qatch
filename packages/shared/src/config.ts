@@ -40,6 +40,13 @@ export const HEADER_NAME_MAX_CHARS = 256;
 /** Max length of a header value, in characters. */
 export const HEADER_VALUE_MAX_CHARS = 8_192;
 
+// --- Report details (not specified in the docs; recorded in API_AND_DATA §3) ---
+
+export const REPORT_TITLE_MAX_CHARS = 200;
+export const REPORT_DESCRIPTION_MAX_CHARS = 10_000;
+export const REPORT_TAGS_MAX_COUNT = 10;
+export const REPORT_TAG_MAX_CHARS = 32;
+
 // --- Recording ---
 
 /** Maximum screen-recording length. Change this one value to adjust the cap everywhere. */

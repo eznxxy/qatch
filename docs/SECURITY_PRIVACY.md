@@ -27,6 +27,11 @@ secrets, AWS key patterns, emails optional (user setting).
 **Screenshots and video.** Provide a blur/redact tool in the editor (images). For recordings, warn the user
 that everything visible is captured; offer a "pause" control.
 
+Image blur is pixelation by block **averaging** (not a reversible filter), with blocks at least about one text line
+tall (`blurBlockFor`, ≥ 12 px) because small blocks over text can be partly reversed. It is flattened into the
+exported PNG; the unannotated original stays only in the local draft (IndexedDB) and is never uploaded once
+upload exists (P3): uploads use the flattened export.
+
 Redaction rules live in `packages/shared/redaction.ts` with unit tests for every rule. Redaction must be
 idempotent and never throw (on error, drop the field rather than leak it). The module is bundled into
 `injected.ts`, which runs on every captured page, so it must be **dependency-free plain TypeScript**: no Zod and

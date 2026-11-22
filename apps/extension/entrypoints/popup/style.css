@@ -1,0 +1,195 @@
+/* Popup layout from the "Extension popup" artboard (360 px wide). */
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  background: var(--surface);
+}
+
+.popup__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 60px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.popup__brand {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.popup__shots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px 12px;
+}
+
+.modes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mode {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.mode:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--page);
+}
+
+.mode:disabled {
+  cursor: not-allowed;
+}
+
+.mode:disabled .mode__icon,
+.mode:disabled .mode__label {
+  color: var(--disabled-fg);
+}
+
+.mode__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius);
+  background: var(--subtle);
+  color: var(--fg-2);
+}
+
+.mode__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mode__label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mode__hint {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.badge {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--subtle);
+  color: var(--fg-3);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.record {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 16px;
+  padding: 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--page);
+}
+
+.record__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.record .badge {
+  background: var(--track);
+}
+
+.record__mic {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 2px;
+}
+
+.record__mic-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg-2);
+  font-size: 13px;
+}
+
+.record__start {
+  height: 48px;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.record__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.record__help {
+  margin: 0;
+  padding: 0 2px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.status {
+  margin: 12px 16px 0;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.status:empty {
+  margin: 0;
+}
+
+.popup__footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-soft);
+  color: var(--muted);
+}
+
+.popup__footer svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.popup__footer p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
