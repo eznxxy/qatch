@@ -3,7 +3,7 @@ import { IDBFactory } from 'fake-indexeddb';
 import { describe, expect, it } from 'vitest';
 
 import { type Draft, draftSchema } from './draft';
-import { deleteDraft, getDraft, putDraft, updateDraft } from './draft-store';
+import { clearDrafts, deleteDraft, getDraft, putDraft, updateDraft } from './draft-store';
 
 const ID = '0b8a3f4e-8c1d-4a2b-9f3e-1c2d3e4f5a6b';
 
@@ -114,5 +114,15 @@ describe('draft store', () => {
     const invalid = { ...makeDraft(), id: 'not-a-uuid' };
     await expect(putDraft(invalid, factory)).rejects.toThrow();
     await expect(getDraft('not-a-uuid', factory)).resolves.toBeUndefined();
+  });
+
+  it('clears every draft', async () => {
+    const factory = new IDBFactory();
+    const other = '1c9b4f5e-9d2e-4b3c-8f4e-2d3e4f5a6b7c';
+    await putDraft(makeDraft(), factory);
+    await putDraft(makeDraft({ id: other }), factory);
+    await clearDrafts(factory);
+    await expect(getDraft(ID, factory)).resolves.toBeUndefined();
+    await expect(getDraft(other, factory)).resolves.toBeUndefined();
   });
 });

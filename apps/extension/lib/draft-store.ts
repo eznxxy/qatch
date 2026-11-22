@@ -96,6 +96,14 @@ export async function deleteDraft(id: string, factory: IDBFactory = indexedDB): 
   await withStore(factory, 'readwrite', (store) => store.delete(id));
 }
 
+/**
+ * Deletes every draft. Used when no editor can be open any more (browser start, extension install/update),
+ * so drafts whose tab-close was never seen do not stay on the device (P1-6).
+ */
+export async function clearDrafts(factory: IDBFactory = indexedDB): Promise<void> {
+  await withStore(factory, 'readwrite', (store) => store.clear());
+}
+
 /** Loads a draft; `undefined` if missing or not a valid draft (e.g. written by an older version). */
 export async function getDraft(
   id: string,

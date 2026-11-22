@@ -45,6 +45,13 @@
 7. On submit: request presigned URLs, upload media (multipart for video), `POST /api/reports` with the payload.
 8. Backend returns the share URL; the editor shows copy-link and export actions.
 
+**Draft lifetime.** A draft lives only as long as its editor tab. It is written to IndexedDB before the editor
+opens and the editor auto-saves into it, so a worker restart or an editor reload loses nothing. Closing the
+editor tab deletes it: the worker keeps an editor-tab -> draft map in `chrome.storage.session` and listens to
+`tabs.onRemoved` (no permission needed). There is no local list of unfinished captures; only shared reports
+are listed (dashboard). As a safety net, all drafts are cleared on browser start and extension install/update,
+when no editor can be open.
+
 Capture is **on-demand only** (no always-on recording). Logs before step 2 are not available (see PRD FR-10).
 To capture the events that lead to a bug, the user clicks **Record Screen**, reproduces the bug, and clicks
 **Stop**: console, network and device info are captured for the whole recording. Screenshot modes attach

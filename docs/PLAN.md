@@ -45,7 +45,7 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
 - [x] **P1-2** Visible-tab screenshot via `captureVisibleTab` → draft saved in IndexedDB → opens editor (FR-01)
   - Note: plain IndexedDB (`lib/draft-store.ts`, tested with `fake-indexeddb`); editor opens at
     `editor.html?draft=<uuid>` next to the source tab and shows the image (annotation is P1-5). No new
-    permissions. Drafts are never cleaned up yet (P1-6).
+    permissions. Drafts are deleted when their editor closes (P1-6).
 - [x] **P1-3** Device info collector with unit tests (FR-09)
   - Note: adds `scripting`. A self-contained probe (`lib/device-env.ts`) runs in the tab's isolated world;
     the worker normalizes it (`lib/device-info.ts`: `userAgentData` first, frozen UA string as fallback,
@@ -72,7 +72,15 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
     removed); the segmented control styles moved to `assets/theme.css` and are shared by the popup and editor.
     Resolved: amber text (~2:1 on white) was hard to read, so text now has a contrasting halo (`textHaloFor`:
     dark for amber, white for red/blue, stroke painted under the fill), readable on light and dark pages.
-- [ ] **P1-6** Draft persistence/recovery after service worker restart or tab close
+- [x] **P1-6** Draft persistence/recovery after service worker restart or tab close
+  - Note (decided with the user): a draft lives only as long as its editor tab. Worker restarts and editor
+    reloads keep it (session in `chrome.storage.session`, draft in IndexedDB, editor auto-save); closing the
+    editor tab deletes it (`lib/editor-tabs.ts`: editor tab -> draft map in `chrome.storage.session`,
+    `tabs.onRemoved`). No "unfinished captures" list: only shared reports appear later, on the dashboard.
+    All drafts are cleared on browser start and extension install/update, and a draft whose editor fails to
+    open is deleted. No new permissions.
+  - Follow-up: the editor asks before closing (Chrome's "Leave site?" dialog) only when there is work to lose
+    (`lib/work-to-lose.ts`: an annotation, title, description or tags). Not after Discard, which confirms itself.
 
 **Exit:** user can capture visible/region, annotate, and download the PNG locally.
 

@@ -19,6 +19,7 @@ import type { Draft } from '@/lib/draft';
 import { parseDraftId } from '@/lib/draft-id';
 import { deleteDraft } from '@/lib/draft-store';
 import { editorCommandFor, isTypingTarget } from '@/lib/editor-shortcuts';
+import { hasWorkToLose } from '@/lib/work-to-lose';
 
 import { AnnotationCanvas } from './AnnotationCanvas';
 import type { AnnotationEngine } from './annotation-engine';
@@ -110,6 +111,21 @@ function Editor({ draft, imageUrl }: { draft: Draft; imageUrl: string }) {
     };
   }, [undo, redo]);
 
+  // Closing the editor deletes the draft (P1-6), so ask first when there is something to lose. Chrome shows
+  // its own "Leave site?" dialog (also on reload, which is harmless) and only after the user interacted.
+  const workToLose = hasWorkToLose(history.present, details);
+  const leavingOnPurpose = useRef(false);
+  useEffect(() => {
+    if (!workToLose) return;
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!leavingOnPurpose.current) event.preventDefault();
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [workToLose]);
+
   function updateDetails(patch: Partial<ReportDetails>) {
     const next = { ...details, ...patch };
     setDetails(next);
@@ -134,11 +150,13 @@ function Editor({ draft, imageUrl }: { draft: Draft; imageUrl: string }) {
   async function discard() {
     if (!window.confirm('Discard this capture? It will be deleted from this device.')) return;
     setDiscarding(true);
+    leavingOnPurpose.current = true; // already confirmed above; no second "Leave site?" prompt
     try {
       await deleteDraft(draft.id);
       await closeCurrentTab();
     } catch (error) {
       console.error('[qatch] failed to discard draft', error);
+      leavingOnPurpose.current = false;
       setDiscarding(false);
     }
   }

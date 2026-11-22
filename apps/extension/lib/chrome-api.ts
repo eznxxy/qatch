@@ -7,6 +7,12 @@ import type { CaptureSession } from './capture-session';
 import { CAPTURE_SESSION_KEY, captureSessionSchema } from './capture-session';
 import type { ActiveTab } from './capture-start';
 import { readDeviceEnv } from './device-env';
+import {
+  EDITOR_TABS_KEY,
+  type EditorTabsStore,
+  editorTabsSchema,
+  rememberEditorTab,
+} from './editor-tabs';
 
 /** The focused tab in the last focused window, if any. */
 export async function getActiveTab(): Promise<ActiveTab | undefined> {
@@ -25,6 +31,18 @@ export async function loadCaptureSession(): Promise<CaptureSession | undefined> 
   const parsed = captureSessionSchema.safeParse(stored[CAPTURE_SESSION_KEY]);
   return parsed.success ? parsed.data : undefined;
 }
+
+/** chrome.storage.session store for lib/editor-tabs.ts. An invalid stored value reads as empty. */
+export const editorTabsStore: EditorTabsStore = {
+  async load() {
+    const stored = await browser.storage.session.get(EDITOR_TABS_KEY);
+    const parsed = editorTabsSchema.safeParse(stored[EDITOR_TABS_KEY] ?? {});
+    return parsed.success ? parsed.data : {};
+  },
+  async save(tabs) {
+    await browser.storage.session.set({ [EDITOR_TABS_KEY]: tabs });
+  },
+};
 
 export async function clearCaptureSession(): Promise<void> {
   await browser.storage.session.remove(CAPTURE_SESSION_KEY);
@@ -76,14 +94,18 @@ export async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
   return response.blob();
 }
 
-/** Opens the editor for a draft in a new tab right after the captured page. */
+/**
+ * Opens the editor for a draft in a new tab right after the captured page, and records the tab so closing
+ * it deletes the draft (P1-6).
+ */
 export async function openEditor(draftId: string, session: CaptureSession): Promise<void> {
   const source = await browser.tabs.get(session.tabId).catch(() => undefined);
-  await browser.tabs.create({
+  const tab = await browser.tabs.create({
     url: browser.runtime.getURL(`/editor.html?draft=${encodeURIComponent(draftId)}`),
     windowId: session.windowId,
     ...(source ? { index: source.index + 1, openerTabId: source.id } : {}),
   });
+  if (tab.id !== undefined) await rememberEditorTab(editorTabsStore, tab.id, draftId);
 }
 
 /** Closes the extension tab this code runs in (e.g. the editor after discarding). */

@@ -20,6 +20,7 @@ import {
   getActiveTab,
   injectContentScript,
   isTabActive,
+  editorTabsStore,
   loadCaptureSession,
   openEditor,
   readDeviceEnvInTab,
@@ -28,7 +29,8 @@ import {
 } from '@/lib/chrome-api';
 import { cropPng } from '@/lib/crop-png';
 import { collectDeviceInfo } from '@/lib/device-info';
-import { putDraft } from '@/lib/draft-store';
+import { clearDrafts, deleteDraft, putDraft } from '@/lib/draft-store';
+import { discardClosedEditorDraft } from '@/lib/editor-tabs';
 import { contentScriptTabId, isExtensionPageSender } from '@/lib/sender';
 
 const newId = () => crypto.randomUUID();
@@ -43,6 +45,20 @@ const collectDevice = (session: CaptureSession) =>
     logError('device info unavailable'),
   );
 const saveDraft = (draft: Parameters<typeof putDraft>[0]) => putDraft(draft);
+/** The draft lives only as long as its editor (P1-6): if the editor cannot open, drop the draft too. */
+const openDraftEditor = async (draftId: string, session: CaptureSession) => {
+  try {
+    await openEditor(draftId, session);
+  } catch (error) {
+    await deleteDraft(draftId).catch(logError('draft cleanup failed'));
+    throw error;
+  }
+};
+
+/** No editor can be open at browser start or after install/update, so no draft is still wanted. */
+const discardAllDrafts = () => {
+  clearDrafts().catch(logError('draft cleanup failed'));
+};
 
 /** Exactly one handler per enabled mode (lib/capture-modes.ts); the type enforces it. */
 const captureHandlers: Record<EnabledCaptureMode, CaptureHandler> = {
@@ -51,7 +67,7 @@ const captureHandlers: Record<EnabledCaptureMode, CaptureHandler> = {
     dataUrlToBlob,
     collectDevice,
     saveDraft,
-    openEditor,
+    openEditor: openDraftEditor,
     newId,
     now: Date.now,
   }),
@@ -61,6 +77,18 @@ const captureHandlers: Record<EnabledCaptureMode, CaptureHandler> = {
 const regionSession = { loadSession: loadCaptureSession, clearSession: clearCaptureSession };
 
 export default defineBackground(() => {
+  // Closing an editor tab discards its draft (P1-6). Reloading it does not fire onRemoved, so work survives.
+  // onRemoved needs no permission; tabs that are not our editors are ignored.
+  browser.tabs.onRemoved.addListener((tabId) => {
+    void discardClosedEditorDraft(tabId, {
+      store: editorTabsStore,
+      deleteDraft: (id) => deleteDraft(id),
+      logError: logError('draft discard failed'),
+    });
+  });
+  browser.runtime.onStartup.addListener(discardAllDrafts);
+  browser.runtime.onInstalled.addListener(discardAllDrafts);
+
   // Registered synchronously at startup so a worker woken by a message still receives it.
   browser.runtime.onMessage.addListener((raw: unknown, sender, sendResponse) => {
     const parsed = msgSchema.safeParse(raw);
@@ -94,7 +122,7 @@ export default defineBackground(() => {
           cropPng,
           collectDevice,
           saveDraft,
-          openEditor,
+          openEditor: openDraftEditor,
           newId,
           now: Date.now,
           logError: logError('region capture failed'),
