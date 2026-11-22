@@ -36,8 +36,9 @@ playwright/.cache/
 .eslintcache
 .turbo/
 
-# Local data (docker-compose volumes, local DB dumps)
+# Local data (docker-compose volumes, local DB dumps) and scratch files
 .data/
+.tmp/
 *.sql.gz
 
 # Editor / OS
