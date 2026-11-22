@@ -10,7 +10,6 @@ import {
   type PathCommand,
   pixelateData,
   TEXT_MAX_CHARS,
-  textColorOn,
   translateAnnotation,
 } from '@/lib/annotations';
 
@@ -131,10 +130,9 @@ export function createText(a: Extract<Annotation, { type: 'text' }>): IText {
     fontFamily: TEXT_FONT,
     fontSize: a.size,
     fontWeight: 600,
-    fill: textColorOn(a.color),
-    backgroundColor: a.color,
-    padding: Math.round(a.size / 4),
-    cursorColor: textColorOn(a.color),
+    // The chosen colour is the text colour; no label background.
+    fill: a.color,
+    cursorColor: a.color,
     editingBorderColor: ACCENT,
   });
 }

@@ -126,38 +126,6 @@
   background: var(--track);
 }
 
-.segmented {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 3px;
-  padding: 3px;
-  border-radius: var(--radius-md);
-  background: var(--track);
-}
-
-.segmented__option {
-  height: 44px;
-  border: 0;
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--fg-3);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.segmented__option[aria-pressed='true'] {
-  background: var(--surface);
-  box-shadow: var(--shadow-raised);
-  color: var(--fg);
-  font-weight: 600;
-}
-
-.segmented__option:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
 .record__mic {
   display: flex;
   align-items: center;

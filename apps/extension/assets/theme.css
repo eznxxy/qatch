@@ -127,6 +127,64 @@ select {
   cursor: not-allowed;
 }
 
+/*
+ * Segmented control, shared by the popup (buttons with aria-pressed) and the editor (labels wrapping visually
+ * hidden radios, so the whole option is the click target and arrow keys move between options).
+ */
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  padding: 3px;
+  border-radius: var(--radius-md);
+  background: var(--track);
+}
+
+.segmented--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.segmented__option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  height: 44px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--fg-3);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.segmented__option:hover {
+  color: var(--fg);
+}
+
+.segmented__option[aria-pressed='true'],
+.segmented__option:has(input:checked) {
+  background: var(--surface);
+  box-shadow: var(--shadow-raised);
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.segmented__option:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.segmented__option:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .switch {
   display: flex;
   align-items: center;

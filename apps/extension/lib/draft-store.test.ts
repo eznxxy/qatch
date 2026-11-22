@@ -66,6 +66,13 @@ describe('draft store', () => {
     expect((await getDraft(ID, factory))?.details.title).toBe('Total shows NaN');
   });
 
+  it.each(['low', 'high', 'critical'] as const)('stores severity %s', async (severity) => {
+    const factory = new IDBFactory();
+    await putDraft(makeDraft(), factory);
+    await updateDraft(ID, (d) => ({ ...d, details: { ...d.details, severity } }), factory);
+    expect((await getDraft(ID, factory))?.details.severity).toBe(severity);
+  });
+
   it('applies concurrent updates one after another (no lost write)', async () => {
     const factory = new IDBFactory();
     await putDraft(makeDraft(), factory);

@@ -14,7 +14,6 @@ import {
   pixelateData,
   redoHistory,
   strokeWidthFor,
-  textColorOn,
   translateAnnotation,
   undoHistory,
 } from './annotations';
@@ -104,12 +103,6 @@ describe('sizing', () => {
     expect(fontSizeFor(2560)).toBe(40);
     expect(blurBlockFor(1280)).toBe(16);
     expect(blurBlockFor(400)).toBe(12);
-  });
-
-  it('uses dark text on amber and white text otherwise', () => {
-    expect(textColorOn('#F5A524')).toBe('#17181C');
-    expect(textColorOn('#E5484D')).toBe('#FFFFFF');
-    expect(textColorOn('#2B59C3')).toBe('#FFFFFF');
   });
 });
 

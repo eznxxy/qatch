@@ -97,11 +97,6 @@ export function blurBlockFor(imageWidth: number): number {
   return Math.max(12, Math.round(imageWidth / 80));
 }
 
-/** Readable text colour on a label of the given colour (white fails contrast on amber). */
-export function textColorOn(color: AnnotationColor): string {
-  return color === '#F5A524' ? '#17181C' : '#FFFFFF';
-}
-
 // --- Geometry ---
 
 /** Shaft plus a two-stroke head at (x2, y2). Head length scales with the stroke, at most half the shaft. */

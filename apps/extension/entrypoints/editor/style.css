@@ -363,31 +363,8 @@ body {
   color: var(--disabled-fg);
 }
 
-.segmented--4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-/* Severity options are labels wrapping visually hidden radios. */
-label.segmented__option {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-label.segmented__option:has(input:checked) {
-  background: var(--surface);
-  box-shadow: var(--shadow-raised);
-  color: var(--fg);
-  font-weight: 600;
-}
-
-label.segmented__option:has(input:focus-visible) {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
-
 .dot {
+  flex: none;
   width: 8px;
   height: 8px;
   border-radius: 50%;

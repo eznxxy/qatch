@@ -68,6 +68,9 @@ Legend: `[ ]` todo · `[x]` done · **(manual)** needs a human check
     marks. Undo/redo (100 steps, Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y), Delete removes the selection, Download PNG
     exports at native resolution. Arrows, pen and text move but do not resize; nothing rotates. `canvas`
     (fabric's optional Node dependency) has its build disabled in `pnpm-workspace.yaml`.
+  - Follow-up polish: text annotations are drawn in the chosen colour with no label background (`textColorOn`
+    removed); the segmented control styles moved to `assets/theme.css` and are shared by the popup and editor.
+    Open question: amber text may be hard to read on light screenshots. Check it by hand.
 - [ ] **P1-6** Draft persistence/recovery after service worker restart or tab close
 
 **Exit:** user can capture visible/region, annotate, and download the PNG locally.
