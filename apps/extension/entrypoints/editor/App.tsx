@@ -11,6 +11,7 @@ import {
   redoHistory,
   undoHistory,
 } from '@/lib/annotations';
+import type { CanvasView } from '@/lib/canvas-fit';
 import { closeCurrentTab } from '@/lib/chrome-api';
 import { downloadBlob } from '@/lib/download';
 import { screenshotFileName } from '@/lib/download-name';
@@ -71,6 +72,7 @@ function Editor({ draft, imageUrl }: { draft: Draft; imageUrl: string }) {
   const annotationsSaver = useDraftSaver(draft.id, writeAnnotations);
   const [tool, setTool] = useState<Tool>('arrow');
   const [color, setColor] = useState<AnnotationColor>('#E5484D');
+  const [view, setView] = useState<CanvasView>('fit');
   const engineRef = useRef<AnnotationEngine | null>(null);
 
   const [discarding, setDiscarding] = useState(false);
@@ -154,6 +156,8 @@ function Editor({ draft, imageUrl }: { draft: Draft; imageUrl: string }) {
       <div className="workspace">
         <main className="workspace__main">
           <AnnotationToolbar
+            view={view}
+            onViewChange={setView}
             tool={tool}
             onToolChange={setTool}
             color={color}
@@ -173,6 +177,8 @@ function Editor({ draft, imageUrl }: { draft: Draft; imageUrl: string }) {
               annotations={history.present}
               tool={tool}
               color={color}
+              view={view}
+              fitWidthOnly={draft.mode === 'full'}
               onChange={onAnnotationsChange}
               engineRef={engineRef}
             />

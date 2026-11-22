@@ -1,6 +1,7 @@
 // Owns the Fabric canvas for the editor (FR-04): drawing tools, selection, sync with the annotation model,
-// and the flattened PNG export. The canvas backing store is the screenshot's native size; CSS scales it to
-// fit, and Fabric maps pointer positions back to image pixels.
+// and the flattened PNG export. Scene coordinates are the screenshot's native pixels. The canvas is drawn at
+// its displayed size (times devicePixelRatio) with a Fabric zoom, so the browser never rescales the bitmap
+// (which blurs it); the export renders the scene again at native size.
 
 import {
   ActiveSelection,
@@ -24,6 +25,7 @@ import {
   orderAnnotations,
   strokeWidthFor,
 } from '@/lib/annotations';
+import { type CanvasView, fitCanvas } from '@/lib/canvas-fit';
 
 import {
   annotationOf,
@@ -71,7 +73,7 @@ export class AnnotationEngine {
     this.canvas = new Canvas(element, {
       width: this.width,
       height: this.height,
-      enableRetinaScaling: false,
+      enableRetinaScaling: true,
       preserveObjectStacking: true,
       uniformScaling: false,
       selectionColor: 'rgba(194, 65, 12, 0.08)',
@@ -85,6 +87,11 @@ export class AnnotationEngine {
       top: 0,
       selectable: false,
       evented: false,
+    });
+
+    // Downscaling the screenshot with the default ('low') quality makes its text soft.
+    this.canvas.on('before:render', ({ ctx }) => {
+      ctx.imageSmoothingQuality = 'high';
     });
 
     this.canvas.on('mouse:down', (e) => {
@@ -133,17 +140,20 @@ export class AnnotationEngine {
     this.canvas.requestRenderAll();
   }
 
-  /** Scales the canvas (CSS only) to the available width; never above native size. */
-  fit(availableWidth: number): void {
-    if (availableWidth <= 0) return;
-    const scale = Math.min(1, availableWidth / this.width);
-    this.canvas.setDimensions(
-      {
-        width: `${Math.round(this.width * scale)}px`,
-        height: `${Math.round(this.height * scale)}px`,
-      },
-      { cssOnly: true },
+  /**
+   * Sizes the canvas for `view` (see fitCanvas) and zooms the scene to match. The backing store follows the
+   * current devicePixelRatio, so call again after a browser zoom change.
+   */
+  fit(available: { width: number; height: number }, view: CanvasView): void {
+    const size = fitCanvas(
+      { width: this.width, height: this.height },
+      available,
+      view,
+      window.devicePixelRatio,
     );
+    if (!size) return;
+    this.canvas.setDimensions({ width: size.width, height: size.height });
+    this.canvas.setZoom(size.zoom);
   }
 
   /** Removes the selected annotations. False if nothing was removed (e.g. while editing text). */
@@ -162,8 +172,15 @@ export class AnnotationEngine {
     const active = this.canvas.getActiveObject();
     if (active instanceof IText && active.isEditing) active.exitEditing();
     this.canvas.discardActiveObject();
-    this.canvas.renderAll();
-    const output = this.canvas.toCanvasElement(1);
+    // Render at zoom 1 over the native size; toCanvasElement(1 / zoom) could round a pixel off the edge.
+    const viewport = this.canvas.viewportTransform;
+    this.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+    let output: HTMLCanvasElement;
+    try {
+      output = this.canvas.toCanvasElement(1, { width: this.width, height: this.height });
+    } finally {
+      this.canvas.setViewportTransform(viewport);
+    }
     return new Promise((resolve, reject) => {
       output.toBlob((blob) => {
         if (blob) resolve(blob);

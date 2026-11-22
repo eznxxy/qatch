@@ -1,9 +1,17 @@
 import { DownloadIcon } from '@/components/icons';
 import { ANNOTATION_COLORS, type AnnotationColor } from '@/lib/annotations';
+import type { CanvasView } from '@/lib/canvas-fit';
 
 import { type Tool, TOOLS } from './tools';
 
+const VIEWS: readonly { id: CanvasView; label: string; title: string }[] = [
+  { id: 'fit', label: 'Fit', title: 'Fit the screenshot to the window' },
+  { id: 'actual', label: '100%', title: 'Show the screenshot at actual size (sharpest)' },
+];
+
 interface AnnotationToolbarProps {
+  view: CanvasView;
+  onViewChange: (view: CanvasView) => void;
   tool: Tool;
   onToolChange: (tool: Tool) => void;
   color: AnnotationColor;
@@ -129,6 +137,25 @@ export function AnnotationToolbar(props: AnnotationToolbarProps) {
           <path d="M20 9H10a6 6 0 0 0 0 12h3" />
         </svg>
       </button>
+
+      <span className="annot__sep" aria-hidden="true" />
+
+      <div role="group" aria-label="Screenshot size" className="segmented annot__view">
+        {VIEWS.map(({ id, label, title }) => (
+          <button
+            key={id}
+            type="button"
+            className="segmented__option"
+            title={title}
+            aria-pressed={props.view === id}
+            onClick={() => {
+              props.onViewChange(id);
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
 
       <button
         type="button"

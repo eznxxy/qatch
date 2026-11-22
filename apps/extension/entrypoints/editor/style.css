@@ -169,6 +169,15 @@ body {
   background: var(--border);
 }
 
+/* Two-option segmented control, sized to its labels (options keep the shared 44 px target). */
+.annot__view {
+  grid-template-columns: repeat(2, auto);
+}
+
+.annot__view .segmented__option {
+  padding: 0 12px;
+}
+
 .annot__colors {
   gap: 2px;
 }
@@ -229,6 +238,32 @@ body {
 .stage__canvas {
   width: 100%;
   min-width: 0;
+}
+
+/* Actual size: the screenshot can be wider than the stage, so scroll it there (not the whole page). */
+.stage__canvas--actual {
+  overflow-x: auto;
+}
+
+/*
+ * Contain (fit, not full page): the stage takes the height left in the column and the canvas is taken out
+ * of flow, so the host's size comes from the layout alone and the script fits the canvas inside it.
+ */
+.stage:has(> .stage__canvas--contain) {
+  flex: 1 1 0;
+  min-height: 240px;
+}
+
+.stage__canvas--contain {
+  position: relative;
+}
+
+.stage__canvas--contain .stage__mount {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Fabric's wrapper: centre the scaled canvas and give it the screenshot card look. */
@@ -532,5 +567,11 @@ body {
   .panel {
     border-top: 1px solid var(--border);
     border-left: 0;
+  }
+
+  /* The page scrolls here, so there is no leftover height to fill: give the contained stage its own. */
+  .stage:has(> .stage__canvas--contain) {
+    flex: none;
+    height: 70vh;
   }
 }
